@@ -1,0 +1,137 @@
+#!/usr/bin/env node
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import prompts from 'prompts';
+import minimist from 'minimist';
+import { blue, green, red, reset } from 'kolorist';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Available templates
+const TEMPLATES = [
+	{ title: blue('Pure ucode'), value: 'pure-ucode' },
+	{ title: red('ucode + C (Coming soon)'), value: 'c-plugin', disabled: true },
+];
+
+async function init() {
+	const argv = minimist(process.argv.slice(2), { string: ['_'] });
+	
+	const argProjectName = argv._[0];
+	const argTemplate = argv.template || argv.t;
+	const argMaintainer = argv.maintainer || argv.m;
+
+	const defaultProjectName = 'my-ucode-app';
+	const defaultMaintainer = 'Your Name <email@example.com>';
+
+	let result = {};
+
+	try {
+		result = await prompts(
+			[
+				{
+					type: argProjectName ? null : 'text',
+					name: 'projectName',
+					message: reset('Project name:'),
+					initial: defaultProjectName,
+				},
+				{
+					type: argTemplate && TEMPLATES.find(t => t.value === argTemplate && !t.disabled) ? null : 'select',
+					name: 'template',
+					message: reset('Select a template:'),
+					choices: TEMPLATES,
+				},
+				{
+					type: argMaintainer ? null : 'text',
+					name: 'maintainer',
+					message: reset('Maintainer (Name <email>):'),
+					initial: defaultMaintainer,
+				}
+			],
+			{
+				onCancel: () => {
+					throw new Error(red('✖') + ' Operation cancelled');
+				},
+			}
+		);
+	} catch (cancelled) {
+		console.log(cancelled.message);
+		return;
+	}
+
+	const projectName = result.projectName || argProjectName || defaultProjectName;
+	const template = result.template || argTemplate;
+	const maintainer = result.maintainer || argMaintainer || defaultMaintainer;
+
+	if (!template) {
+		console.error(red('✖') + ' No valid template selected.');
+		return;
+	}
+
+	const root = path.resolve(process.cwd(), projectName);
+
+	if (!fs.existsSync(root)) {
+		fs.mkdirSync(root, { recursive: true });
+	}
+
+	const templateDir = path.resolve(__dirname, 'templates', template);
+
+	if (!fs.existsSync(templateDir)) {
+		console.error(red('✖') + ` Template directory "${template}" does not exist.`);
+		return;
+	}
+
+	const write = (file, content) => {
+		const targetPath = path.join(root, file.replace('{{PKG_NAME}}', projectName));
+		const dir = path.dirname(targetPath);
+		if (!fs.existsSync(dir)) {
+			fs.mkdirSync(dir, { recursive: true });
+		}
+		
+		if (content) {
+			fs.writeFileSync(targetPath, content);
+		} else {
+			copy(path.join(templateDir, file), targetPath);
+		}
+	};
+
+	function copy(src, dest) {
+		const stat = fs.statSync(src);
+		if (stat.isDirectory()) {
+			copyDir(src, dest);
+		} else {
+			let content = fs.readFileSync(src, 'utf-8');
+			
+			// Replace placeholders
+			content = content.replace(/{{PKG_NAME}}/g, projectName);
+			content = content.replace(/{{MAINTAINER}}/g, maintainer);
+			content = content.replace(/{{YEAR}}/g, new Date().getFullYear());
+			
+			fs.writeFileSync(dest, content);
+		}
+	}
+
+	function copyDir(srcDir, destDir) {
+		fs.mkdirSync(destDir, { recursive: true });
+		for (const file of fs.readdirSync(srcDir)) {
+			const srcFile = path.resolve(srcDir, file);
+			const destFile = path.resolve(destDir, file.replace('{{PKG_NAME}}', projectName));
+			copy(srcFile, destFile);
+		}
+	}
+
+	const files = fs.readdirSync(templateDir);
+	for (const file of files) {
+		write(file);
+	}
+
+	console.log(`\nDone. Now run:\n`);
+	console.log(green(`  cd ${projectName}`));
+	console.log(green(`  make test`));
+	console.log();
+}
+
+init().catch((e) => {
+	console.error(e);
+});
