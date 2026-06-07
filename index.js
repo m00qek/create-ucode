@@ -89,6 +89,11 @@ async function init() {
 		return;
 	}
 
+	if (path.normalize(projectName).split(path.sep).includes('..')) {
+		console.error(red('✖') + ` "${projectName}" contains path traversal.`);
+		return;
+	}
+
 	const root = path.resolve(process.cwd(), projectName);
 	const packageName = path.basename(root);
 
