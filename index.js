@@ -15,9 +15,29 @@ const TEMPLATES = [
 	{ title: red('ucode + C (Coming soon)'), value: 'c-plugin', disabled: true },
 ];
 
+function printHelp() {
+	const available = TEMPLATES.filter(t => !t.disabled).map(t => t.value).join(', ');
+	console.log([
+		'Usage: create-ucode [project-name] [options]',
+		'',
+		'Arguments:',
+		'  project-name       Directory name and PKG_NAME (default: my-ucode-app)',
+		'',
+		'Options:',
+		'  --template, -t     Template to use: ' + available,
+		'  --maintainer, -m   Maintainer string, e.g. "Name <email>"',
+		'  --help, -h         Show this help message',
+	].join('\n'));
+}
+
 async function init() {
 	const argv = minimist(process.argv.slice(2), { string: ['_'] });
-	
+
+	if (argv.help || argv.h) {
+		printHelp();
+		return;
+	}
+
 	const argProjectName = argv._[0];
 	const argTemplate = argv.template || argv.t;
 	const argMaintainer = argv.maintainer || argv.m;
