@@ -146,13 +146,15 @@ async function init() {
 		if (stat.isDirectory()) {
 			copyDir(src, dest);
 		} else {
-			let content = fs.readFileSync(src, 'utf-8');
-			
-			// Replace placeholders
+			const buf = fs.readFileSync(src);
+			if (buf.includes(0)) {
+				fs.writeFileSync(dest, buf);
+				return;
+			}
+			let content = buf.toString('utf-8');
 			content = content.replace(/{{PKG_NAME}}/g, packageName);
 			content = content.replace(/{{MAINTAINER}}/g, maintainer);
 			content = content.replace(/{{YEAR}}/g, new Date().getFullYear());
-			
 			fs.writeFileSync(dest, content);
 		}
 	}
