@@ -45,5 +45,4 @@ package:
 			./scripts/feeds install ucode && \
 			make defconfig && \
 			make package/$(PKG_NAME)/compile V=s \
-		"
-	rm -f bin/$(PKG_NAME)-Makefile
+		"; EC=$$?; rm -f bin/$(PKG_NAME)-Makefile; exit $$EC
