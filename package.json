@@ -15,6 +15,7 @@
     "index.js",
     "templates"
   ],
+  "repository": "github:m00qek/create-ucode",
   "license": "MIT",
   "dependencies": {
     "kolorist": "^1.8.0",
