@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Available templates
 const TEMPLATES = [
 	{ title: blue('Pure ucode'), value: 'pure-ucode' },
-	{ title: red('ucode + C (Coming soon)'), value: 'c-plugin', disabled: true },
+	{ title: green('ucode + C plugin'), value: 'c-plugin' },
 ];
 
 function printHelp() {
