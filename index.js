@@ -125,6 +125,9 @@ async function init() {
 			return;
 		}
 		if (!overwrite) return;
+		for (const f of fs.readdirSync(root)) {
+			fs.rmSync(path.join(root, f), { recursive: true, force: true });
+		}
 	} else if (!fs.existsSync(root)) {
 		fs.mkdirSync(root, { recursive: true });
 	}
