@@ -21,23 +21,6 @@ jobs:
       - run: npm install
       - run: npm test
 
-  publish:
-    name: Publish to npm
-    needs: test
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-          registry-url: https://registry.npmjs.org
-      - run: npm install
-      - run: npm publish --provenance
-
   push-sample-app:
     name: Push pure-ucode scaffold
     needs: test
@@ -58,7 +41,9 @@ jobs:
           sed -i 's/branches: \[main, master\]/branches: [pure-ucode]/' \
             /tmp/ucode-sample-app/.github/workflows/ci.yml
       - name: Push orphan branch
+        id: push
         run: |
+          PUSH_TIME=$(date -u -d '-30 seconds' +%Y-%m-%dT%H:%M:%SZ)
           cd /tmp/ucode-sample-app
           git init
           git config user.email "oliveira.fh42@gmail.com"
@@ -68,6 +53,23 @@ jobs:
           git commit -m "chore: update from create-ucode@${GITHUB_SHA::8}"
           git remote add origin https://x-access-token:${{ secrets.SAMPLE_APP_TOKEN }}@github.com/m00qek/ucode-sample-app.git
           git push --force origin pure-ucode
+          echo "push_time=$PUSH_TIME" >> $GITHUB_OUTPUT
+      - name: Wait for orphan branch CI
+        env:
+          GH_TOKEN: ${{ secrets.SAMPLE_APP_TOKEN }}
+        run: |
+          for i in $(seq 1 24); do
+            sleep 5
+            RUN_ID=$(gh run list \
+              --repo m00qek/ucode-sample-app \
+              --branch pure-ucode \
+              --limit 1 \
+              --json databaseId,createdAt \
+              --jq ".[0] | select(.createdAt >= \"${{ steps.push.outputs.push_time }}\") | .databaseId // empty")
+            [ -n "$RUN_ID" ] && break
+          done
+          [ -z "$RUN_ID" ] && echo "Timed out waiting for CI run on pure-ucode branch" && exit 1
+          gh run watch "$RUN_ID" --repo m00qek/ucode-sample-app --exit-status
 
   push-sample-app-c-mod:
     name: Push c-mod scaffold
@@ -89,7 +91,9 @@ jobs:
           sed -i 's/branches: \[main, master\]/branches: [c-module]/' \
             /tmp/ucode-sample-app/.github/workflows/ci.yml
       - name: Push orphan branch
+        id: push
         run: |
+          PUSH_TIME=$(date -u -d '-30 seconds' +%Y-%m-%dT%H:%M:%SZ)
           cd /tmp/ucode-sample-app
           git init
           git config user.email "oliveira.fh42@gmail.com"
@@ -99,3 +103,37 @@ jobs:
           git commit -m "chore: update from create-ucode@${GITHUB_SHA::8}"
           git remote add origin https://x-access-token:${{ secrets.SAMPLE_APP_TOKEN }}@github.com/m00qek/ucode-sample-app.git
           git push --force origin c-module
+          echo "push_time=$PUSH_TIME" >> $GITHUB_OUTPUT
+      - name: Wait for orphan branch CI
+        env:
+          GH_TOKEN: ${{ secrets.SAMPLE_APP_TOKEN }}
+        run: |
+          for i in $(seq 1 24); do
+            sleep 5
+            RUN_ID=$(gh run list \
+              --repo m00qek/ucode-sample-app \
+              --branch c-module \
+              --limit 1 \
+              --json databaseId,createdAt \
+              --jq ".[0] | select(.createdAt >= \"${{ steps.push.outputs.push_time }}\") | .databaseId // empty")
+            [ -n "$RUN_ID" ] && break
+          done
+          [ -z "$RUN_ID" ] && echo "Timed out waiting for CI run on c-module branch" && exit 1
+          gh run watch "$RUN_ID" --repo m00qek/ucode-sample-app --exit-status
+
+  publish:
+    name: Publish to npm
+    needs: [test, push-sample-app, push-sample-app-c-mod]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          registry-url: https://registry.npmjs.org
+      - run: npm install
+      - run: npm publish --provenance
