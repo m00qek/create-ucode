@@ -1,9 +1,8 @@
-#include <stdint.h>
 #include <ucode/module.h>
 
 static int64_t add(int64_t a, int64_t b)
 {
-	return (int64_t)((uint64_t)a + (uint64_t)b);
+	return a + b;
 }
 
 static uc_value_t *uc_add(uc_vm_t *vm, size_t nargs)

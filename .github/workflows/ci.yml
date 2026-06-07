@@ -63,16 +63,16 @@ jobs:
       - run: npm install
       - name: Scaffold
         run: |
-          node index.js /tmp/ucode-sample-app-c-mod \
+          node index.js /tmp/ucode-sample-app \
             --template c-mod \
             --maintainer "António Mora <oliveira.fh42@gmail.com>"
       - name: Patch CI branch trigger
         run: |
           sed -i 's/branches: \[main, master\]/branches: [c-module]/' \
-            /tmp/ucode-sample-app-c-mod/.github/workflows/ci.yml
+            /tmp/ucode-sample-app/.github/workflows/ci.yml
       - name: Push orphan branch
         run: |
-          cd /tmp/ucode-sample-app-c-mod
+          cd /tmp/ucode-sample-app
           git init
           git config user.email "oliveira.fh42@gmail.com"
           git config user.name "António Mora"
