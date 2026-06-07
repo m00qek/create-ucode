@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: npm test
+
+  push-sample-app:
+    name: Push pure-ucode scaffold
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+      - run: npm install
+      - name: Scaffold
+        run: |
+          node index.js /tmp/ucode-sample-app \
+            --template pure-ucode \
+            --maintainer "António Mora <oliveira.fh42@gmail.com>"
+      - name: Patch CI branch trigger
+        run: |
+          sed -i 's/branches: \[main, master\]/branches: [pure-ucode]/' \
+            /tmp/ucode-sample-app/.github/workflows/ci.yml
+      - name: Push orphan branch
+        run: |
+          cd /tmp/ucode-sample-app
+          git init
+          git config user.email "oliveira.fh42@gmail.com"
+          git config user.name "António Mora"
+          git checkout --orphan pure-ucode
+          git add -A
+          git commit -m "chore: update from create-ucode@${GITHUB_SHA::8}"
+          git remote add origin https://x-access-token:${{ secrets.SAMPLE_APP_TOKEN }}@github.com/m00qek/ucode-sample-app.git
+          git push --force origin pure-ucode
