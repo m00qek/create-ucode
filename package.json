@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node index.js dev-app --template pure-ucode --maintainer \"Dev <dev@example.com>\"",
-    "test": "T=$(mktemp -d) && node index.js $T/smoke-test --template pure-ucode --maintainer \"Test Bot <bot@example.com>\" && ls -R $T/smoke-test; rm -rf $T"
+    "test": "T=$(mktemp -d) && node index.js $T/pure-ucode --template pure-ucode --maintainer \"Test Bot <bot@example.com>\" && node index.js $T/c-mod --template c-mod --maintainer \"Test Bot <bot@example.com>\"; EC=$?; rm -rf $T; exit $EC"
   },
   "files": [
     "index.js",

@@ -20,7 +20,7 @@ A ucode project with a C extension module.
 
 ```
 mod/          C source and CMakeLists.txt for the native extension
-src/          ucode scripts (main.uc re-exports from the C module)
+src/          ucode scripts (re-exports from the C module)
 test/         utest unit tests
 openwrt/      OpenWrt package Makefile for SDK builds
 ```

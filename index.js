@@ -140,18 +140,13 @@ async function init() {
 		return;
 	}
 
-	const write = (file, content) => {
+	const write = (file) => {
 		const targetPath = path.join(root, file.replace('{{PKG_NAME}}', packageName).replace('{{UCODE_MOD_NAME}}', ucodeModName));
 		const dir = path.dirname(targetPath);
 		if (!fs.existsSync(dir)) {
 			fs.mkdirSync(dir, { recursive: true });
 		}
-		
-		if (content) {
-			fs.writeFileSync(targetPath, content);
-		} else {
-			copy(path.join(templateDir, file), targetPath);
-		}
+		copy(path.join(templateDir, file), targetPath);
 	};
 
 	function copy(src, dest) {
@@ -167,7 +162,7 @@ async function init() {
 			let content = buf.toString('utf-8');
 			content = content.replace(/{{PKG_NAME}}/g, packageName);
 			content = content.replace(/{{UCODE_MOD_NAME}}/g, ucodeModName);
-			content = content.replace(/{{MAINTAINER}}/g, maintainer);
+			content = content.replace(/{{MAINTAINER}}/g, () => maintainer);
 			content = content.replace(/{{YEAR}}/g, new Date().getFullYear());
 			fs.writeFileSync(dest, content);
 		}
