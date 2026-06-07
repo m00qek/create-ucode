@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ env.PKG_NAME }}-${{ matrix.sdk }}
-          path: bin/packages/**/${{ env.PKG_NAME }}*
+          path: build/${{ matrix.sdk }}/*/packages/**/${{ env.PKG_NAME }}*
 
   release:
     name: Create Release

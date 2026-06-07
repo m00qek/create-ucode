@@ -1,4 +1,7 @@
-FROM openwrt/rootfs:x86-64-openwrt-25.12
+ARG SDK_ARCH=x86-64
+ARG SDK_VERSION=25.12
+
+FROM openwrt/rootfs:${SDK_ARCH}-openwrt-${SDK_VERSION}
 
 RUN mkdir -p /var/lock && \
     wget -q --no-check-certificate -O /tmp/utest.apk \

@@ -96,6 +96,7 @@ async function init() {
 
 	const root = path.resolve(process.cwd(), projectName);
 	const packageName = path.basename(root);
+	const ucodeModName = packageName.replace(/-/g, '_');
 
 	if (!/^[a-z0-9][a-z0-9_-]*$/.test(packageName)) {
 		console.error(red('✖') + ` Invalid package name: "${packageName}". Use only lowercase letters, numbers, hyphens, and underscores.`);
@@ -140,7 +141,7 @@ async function init() {
 	}
 
 	const write = (file, content) => {
-		const targetPath = path.join(root, file.replace('{{PKG_NAME}}', packageName));
+		const targetPath = path.join(root, file.replace('{{PKG_NAME}}', packageName).replace('{{UCODE_MOD_NAME}}', ucodeModName));
 		const dir = path.dirname(targetPath);
 		if (!fs.existsSync(dir)) {
 			fs.mkdirSync(dir, { recursive: true });
@@ -165,6 +166,7 @@ async function init() {
 			}
 			let content = buf.toString('utf-8');
 			content = content.replace(/{{PKG_NAME}}/g, packageName);
+			content = content.replace(/{{UCODE_MOD_NAME}}/g, ucodeModName);
 			content = content.replace(/{{MAINTAINER}}/g, maintainer);
 			content = content.replace(/{{YEAR}}/g, new Date().getFullYear());
 			fs.writeFileSync(dest, content);
@@ -175,7 +177,7 @@ async function init() {
 		fs.mkdirSync(destDir, { recursive: true });
 		for (const file of fs.readdirSync(srcDir)) {
 			const srcFile = path.resolve(srcDir, file);
-			const destFile = path.join(destDir, file.replace('{{PKG_NAME}}', packageName));
+			const destFile = path.join(destDir, file.replace('{{PKG_NAME}}', packageName).replace('{{UCODE_MOD_NAME}}', ucodeModName));
 			copy(srcFile, destFile);
 		}
 	}

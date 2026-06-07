@@ -9,14 +9,17 @@ PKG_LICENSE:=MIT
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-define Package/{{PKG_NAME}}
+UCODE_MOD_NAME:={{UCODE_MOD_NAME}}
+CMAKE_OPTIONS += -DPKG_NAME=$(UCODE_MOD_NAME)
+
+define Package/$(PKG_NAME)
   SECTION:=utils
   CATEGORY:=Utilities
-  TITLE:={{PKG_NAME}} ucode application
+  TITLE:=$(PKG_NAME) ucode application
   DEPENDS:=+ucode +libucode
 endef
 
-define Package/{{PKG_NAME}}/description
+define Package/$(PKG_NAME)/description
   A ucode application with a C extension module.
 endef
 
@@ -25,12 +28,12 @@ define Build/Prepare
 	$(CP) ./mod/* $(PKG_BUILD_DIR)/
 endef
 
-define Package/{{PKG_NAME}}/install
-	$(INSTALL_DIR) $(1)/usr/lib/ucode/{{PKG_NAME}}
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/ucode/{{PKG_NAME}}/native.so \
-		$(1)/usr/lib/ucode/{{PKG_NAME}}/native.so
+define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/lib/ucode/$(UCODE_MOD_NAME)
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/ucode/$(UCODE_MOD_NAME)/native.so \
+		$(1)/usr/lib/ucode/$(UCODE_MOD_NAME)/native.so
 	$(INSTALL_DIR) $(1)/usr/share/ucode
-	$(INSTALL_DATA) ./src/main.uc $(1)/usr/share/ucode/{{PKG_NAME}}.uc
+	$(INSTALL_DATA) ./src/{{UCODE_MOD_NAME}}.uc $(1)/usr/share/ucode/$(UCODE_MOD_NAME).uc
 endef
 
-$(eval $(call BuildPackage,{{PKG_NAME}}))
+$(eval $(call BuildPackage,$(PKG_NAME)))

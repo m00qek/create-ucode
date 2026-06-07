@@ -68,7 +68,7 @@ jobs:
             --maintainer "António Mora <oliveira.fh42@gmail.com>"
       - name: Patch CI branch trigger
         run: |
-          sed -i 's/branches: \[main, master\]/branches: [c-mod]/' \
+          sed -i 's/branches: \[main, master\]/branches: [c-module]/' \
             /tmp/ucode-sample-app-c-mod/.github/workflows/ci.yml
       - name: Push orphan branch
         run: |
@@ -76,8 +76,8 @@ jobs:
           git init
           git config user.email "oliveira.fh42@gmail.com"
           git config user.name "António Mora"
-          git checkout --orphan c-mod
+          git checkout --orphan c-module
           git add -A
           git commit -m "chore: update from create-ucode@${GITHUB_SHA::8}"
           git remote add origin https://x-access-token:${{ secrets.SAMPLE_APP_TOKEN }}@github.com/m00qek/ucode-sample-app.git
-          git push --force origin c-mod
+          git push --force origin c-module
