@@ -2,16 +2,16 @@
 
 An interactive project initializer for [ucode](https://github.com/jow-/ucode), OpenWrt's modern scripting language.
 
-`create-ucode` helps you scaffold a production-ready ucode project in seconds, complete with unit testing, Docker-based isolation, and OpenWrt package integration.
+`create-ucode` helps you scaffold a production-ready ucode project in seconds, complete with unit testing, Docker-based isolation, OpenWrt package integration, and GitHub Actions CI.
 
 ---
 
 ## Quick Start
 
-The fastest way to start a new ucode project is using `npm create`:
+**Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and Node.js.
 
 ```bash
-npm create ucode my-app
+npm create ucode@latest my-app
 ```
 
 Follow the interactive prompts to choose your template and set your maintainer info. Once finished:
@@ -29,6 +29,7 @@ make test   # Runs the unit tests in a Docker container
 - **Integrated Testing**: Out-of-the-box configuration for [utest](https://github.com/m00qek/utest).
 - **Dockerized Workflow**: Test your scripts in a bit-identical OpenWrt environment without needing a router.
 - **OpenWrt Ready**: Generates a standard `Makefile` compatible with the OpenWrt SDK and buildroot.
+- **GitHub Actions CI**: Lint, test, and publish `.apk` packages on every push. Releases are triggered by a version tag.
 - **Dual Mode**: Use the friendly interactive wizard or script it via CLI flags.
 
 ---
@@ -36,7 +37,7 @@ make test   # Runs the unit tests in a Docker container
 ## CLI Reference
 
 ### Usage
-`npm create ucode [project-name] [options]`
+`npx create-ucode [project-name] [options]`
 
 ### Arguments
 | Argument | Description |
@@ -53,14 +54,12 @@ make test   # Runs the unit tests in a Docker container
 ### Unattended Mode
 To skip all prompts (useful for CI/CD):
 ```bash
-npm create ucode my-app --template pure-ucode --maintainer "Bot <bot@example.com>"
+npx create-ucode my-app --template pure-ucode --maintainer "Bot <bot@example.com>"
 ```
 
 ---
 
 ## Development
-
-If you want to contribute to `create-ucode` or run it from source:
 
 ### Local Setup
 1. Clone the repository.
@@ -71,11 +70,10 @@ If you want to contribute to `create-ucode` or run it from source:
 
 ### Available Scripts
 - `npm start`: Run the interactive CLI.
-- `npm run dev`: Generate a `dev-app` project for rapid testing.
-- `npm test`: Run a collision-free smoke test in `/tmp`.
+- `npm test`: Run a smoke test that scaffolds a project into a temp directory and verifies the output.
 
 ### Linking for Local Use
-You can link the package to your global npm registry to test `npm create ucode` as a user would:
+To test `npm create ucode@latest` end-to-end as a user would:
 ```bash
 npm link
 ```
