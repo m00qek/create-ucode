@@ -9,11 +9,12 @@ A ucode project with a C extension module.
 | Command | Description |
 | :--- | :--- |
 | `make test` | Compile the C module and run unit tests |
+| `make compile` | Compile the C module without running tests |
 | `make lint` | Lint `.uc` files with ucode-lint |
 | `make package` | Build OpenWrt `.apk` via SDK |
 | `make shell` | Open shell in the test container |
 
-`make test` compiles the C module inside the OpenWrt SDK container (first run downloads the SDK image, ~4 GB) and then runs the ucode test suite in a lightweight OpenWrt container. Subsequent runs skip the compile step if sources are unchanged.
+`make test` compiles the C module inside the OpenWrt SDK container (first run downloads the SDK image, ~4 GB) and then runs the ucode test suite in a lightweight OpenWrt container. Subsequent runs skip the compile step if sources are unchanged. `make compile` also extracts ucode headers into `mod/compile_flags.txt` for IDE support.
 
 ## Project layout
 
