@@ -1,5 +1,10 @@
 #include <ucode/module.h>
 
+static int64_t add(int64_t a, int64_t b)
+{
+	return a + b;
+}
+
 static uc_value_t *uc_add(uc_vm_t *vm, size_t nargs)
 {
 	uc_value_t *a = uc_fn_arg(0);
@@ -8,7 +13,7 @@ static uc_value_t *uc_add(uc_vm_t *vm, size_t nargs)
 	if (ucv_type(a) != UC_INTEGER || ucv_type(b) != UC_INTEGER)
 		return NULL;
 
-	return ucv_int64_new(ucv_int64_get(a) + ucv_int64_get(b));
+	return ucv_int64_new(add(ucv_int64_get(a), ucv_int64_get(b)));
 }
 
 static const uc_function_list_t fns[] = {

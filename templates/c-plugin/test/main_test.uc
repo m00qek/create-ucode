@@ -1,5 +1,5 @@
 import { describe, it, assert } from 'utest';
-import { add } from 'main';
+import { add, multiply } from 'main';
 
 describe("add()", () => {
 	it("returns the sum of two numbers", () => {
@@ -8,5 +8,15 @@ describe("add()", () => {
 
 	it("handles negative numbers", () => {
 		assert.match(-1, add(2, -3));
+	});
+});
+
+describe("multiply()", () => {
+	it("returns the product of two numbers", () => {
+		assert.match(6, multiply(2, 3));
+	});
+
+	it("returns zero when multiplying by zero", () => {
+		assert.match(0, multiply(5, 0));
 	});
 });
