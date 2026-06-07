@@ -4,21 +4,24 @@ A pure ucode project.
 
 ## Development
 
-### Prerequisites
-- Docker (for testing and packaging)
-- `ucode-lint` (for linting)
+**Prerequisites:** Docker and [ucode-lint](https://github.com/m00qek/ucode-lint).
 
-### Running Tests
+| Command | Description |
+| :--- | :--- |
+| `make test` | Run unit tests inside an OpenWrt Docker container |
+| `make lint` | Lint source files with ucode-lint |
+| `make package` | Build an OpenWrt `.apk` package via the SDK |
+| `make shell` | Open a shell inside the test container |
+
+## CI & Releases
+
+GitHub Actions runs lint and tests on every push and pull request.
+
+To publish a release, push a version tag:
+
 ```bash
-make test
+git tag v1.0.0
+git push --tags
 ```
 
-### Linting
-```bash
-make lint
-```
-
-### Building OpenWrt Package
-```bash
-make package
-```
+This builds packages for all supported OpenWrt versions and creates a GitHub release with the `.apk` files attached.
