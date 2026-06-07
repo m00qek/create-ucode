@@ -120,6 +120,10 @@ async function init() {
 			console.log(cancelled.message);
 			return;
 		}
+		if (overwrite === undefined) {
+			console.log(red('✖') + ' Operation cancelled');
+			return;
+		}
 		if (!overwrite) return;
 	} else if (!fs.existsSync(root)) {
 		fs.mkdirSync(root, { recursive: true });
