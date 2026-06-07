@@ -70,6 +70,7 @@ async function init() {
 	}
 
 	const root = path.resolve(process.cwd(), projectName);
+	const packageName = path.basename(root);
 
 	if (!fs.existsSync(root)) {
 		fs.mkdirSync(root, { recursive: true });
@@ -83,7 +84,7 @@ async function init() {
 	}
 
 	const write = (file, content) => {
-		const targetPath = path.join(root, file.replace('{{PKG_NAME}}', projectName));
+		const targetPath = path.join(root, file.replace('{{PKG_NAME}}', packageName));
 		const dir = path.dirname(targetPath);
 		if (!fs.existsSync(dir)) {
 			fs.mkdirSync(dir, { recursive: true });
@@ -104,7 +105,7 @@ async function init() {
 			let content = fs.readFileSync(src, 'utf-8');
 			
 			// Replace placeholders
-			content = content.replace(/{{PKG_NAME}}/g, projectName);
+			content = content.replace(/{{PKG_NAME}}/g, packageName);
 			content = content.replace(/{{MAINTAINER}}/g, maintainer);
 			content = content.replace(/{{YEAR}}/g, new Date().getFullYear());
 			
@@ -116,7 +117,7 @@ async function init() {
 		fs.mkdirSync(destDir, { recursive: true });
 		for (const file of fs.readdirSync(srcDir)) {
 			const srcFile = path.resolve(srcDir, file);
-			const destFile = path.resolve(destDir, file.replace('{{PKG_NAME}}', projectName));
+			const destFile = path.join(destDir, file.replace('{{PKG_NAME}}', packageName));
 			copy(srcFile, destFile);
 		}
 	}
