@@ -33,10 +33,10 @@ package:
 	mkdir -p bin
 	chmod 777 bin
 	sed 's/PKG_VERSION:=.*/PKG_VERSION:=$(PKG_VERSION)/' \
-		openwrt/$(PKG_NAME)/Makefile > /tmp/$(PKG_NAME)-Makefile
+		openwrt/$(PKG_NAME)/Makefile > bin/$(PKG_NAME)-Makefile
 	docker run --rm \
 		-v $(CURDIR)/src:/builder/package/$(PKG_NAME)/src:ro \
-		-v /tmp/$(PKG_NAME)-Makefile:/builder/package/$(PKG_NAME)/Makefile:ro \
+		-v $(CURDIR)/bin/$(PKG_NAME)-Makefile:/builder/package/$(PKG_NAME)/Makefile:ro \
 		-v $(CURDIR)/openwrt/$(PKG_NAME)/test.sh:/builder/package/$(PKG_NAME)/test.sh:ro \
 		-v $(CURDIR)/bin:/builder/bin \
 		openwrt/sdk:$(SDK_ARCH)-$(SDK_VERSION) \
@@ -46,3 +46,4 @@ package:
 			make defconfig && \
 			make package/$(PKG_NAME)/compile V=s \
 		"
+	rm -f bin/$(PKG_NAME)-Makefile
