@@ -5,6 +5,9 @@ on:
     branches: [main]
     tags: ["v*"]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -18,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '20'
-      - run: npm install
+      - run: npm ci
       - run: npm test
 
   push-sample-app:
@@ -30,7 +33,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '20'
-      - run: npm install
+      - run: npm ci
       - name: Scaffold
         run: |
           node index.js /tmp/ucode-sample-app \
@@ -81,7 +84,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '20'
-      - run: npm install
+      - run: npm ci
       - name: Scaffold
         run: |
           node index.js /tmp/ucode-sample-app \
@@ -135,7 +138,8 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: https://registry.npmjs.org
-      - run: npm install
+          cache: npm
+      - run: npm ci
       - run: npm publish --provenance
