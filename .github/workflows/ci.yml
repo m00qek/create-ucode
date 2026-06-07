@@ -51,8 +51,8 @@ jobs:
           git remote add origin https://x-access-token:${{ secrets.SAMPLE_APP_TOKEN }}@github.com/m00qek/ucode-sample-app.git
           git push --force origin pure-ucode
 
-  push-sample-app-c-plugin:
-    name: Push c-plugin scaffold
+  push-sample-app-c-mod:
+    name: Push c-mod scaffold
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -63,21 +63,21 @@ jobs:
       - run: npm install
       - name: Scaffold
         run: |
-          node index.js /tmp/ucode-sample-app-c-plugin \
-            --template c-plugin \
+          node index.js /tmp/ucode-sample-app-c-mod \
+            --template c-mod \
             --maintainer "António Mora <oliveira.fh42@gmail.com>"
       - name: Patch CI branch trigger
         run: |
-          sed -i 's/branches: \[main, master\]/branches: [c-plugin]/' \
-            /tmp/ucode-sample-app-c-plugin/.github/workflows/ci.yml
+          sed -i 's/branches: \[main, master\]/branches: [c-mod]/' \
+            /tmp/ucode-sample-app-c-mod/.github/workflows/ci.yml
       - name: Push orphan branch
         run: |
-          cd /tmp/ucode-sample-app-c-plugin
+          cd /tmp/ucode-sample-app-c-mod
           git init
           git config user.email "oliveira.fh42@gmail.com"
           git config user.name "António Mora"
-          git checkout --orphan c-plugin
+          git checkout --orphan c-mod
           git add -A
           git commit -m "chore: update from create-ucode@${GITHUB_SHA::8}"
           git remote add origin https://x-access-token:${{ secrets.SAMPLE_APP_TOKEN }}@github.com/m00qek/ucode-sample-app.git
-          git push --force origin c-plugin
+          git push --force origin c-mod
