@@ -24,9 +24,9 @@ jobs:
     name: Lint Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
       - name: Install ucode-lint
@@ -39,7 +39,7 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run tests
         run: make test
 
@@ -52,13 +52,13 @@ jobs:
       matrix:
         sdk: ['24.10.6', '25.12.4']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Export project variables
         run: grep '^PKG_NAME:=' openwrt/{{PKG_NAME}}/Makefile | sed 's/:=/=/' >> $GITHUB_ENV
       - name: Build package
         run: make package SDK_VERSION=${{ matrix.sdk }}
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.PKG_NAME }}-${{ matrix.sdk }}
           path: bin/packages/**/${{ env.PKG_NAME }}*
@@ -71,9 +71,9 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Download all package artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts
       - name: Create release
