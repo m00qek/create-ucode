@@ -10,6 +10,7 @@ PKG_VERSION      := $(if $(GIT_COMMIT),$(PKG_VERSION_BASE)~$(GIT_COMMIT),$(PKG_V
 
 BUILD_DIR       := build/$(SDK_VERSION)/$(SDK_ARCH)
 SDK_MAJOR_MINOR := $(shell echo $(SDK_VERSION) | cut -d. -f1,2)
+REPORTER        := $(if $(CI),,-r compact)
 
 BUILD_IMAGE = docker run --rm \
 	-v $(CURDIR)/src:/builder/package/$(PKG_NAME)/src:ro \
@@ -59,7 +60,7 @@ mod/compile_flags.txt: $(BUILD_DIR)/include
 	printf -- '-I%s\n-Wall\n-Wextra\n-Werror\n-std=gnu99\n' "$(CURDIR)/$(BUILD_DIR)/include" > mod/compile_flags.txt
 
 test: image $(BUILD_DIR)/native.so
-	$(TEST_IMAGE) utest -l /app/src test/
+	$(TEST_IMAGE) utest -l /app/src $(REPORTER) test/
 
 shell: TEST_OPTS := -it
 shell: image

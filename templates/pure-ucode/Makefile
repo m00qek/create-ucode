@@ -8,6 +8,7 @@ PKG_VERSION_BASE := $(shell grep -oP 'PKG_VERSION:=\K.*' openwrt/$(PKG_NAME)/Mak
 PKG_VERSION      := $(if $(GIT_COMMIT),$(PKG_VERSION_BASE)~$(GIT_COMMIT),$(PKG_VERSION_BASE))
 
 SDK_MAJOR_MINOR := $(shell echo $(SDK_VERSION) | cut -d. -f1,2)
+REPORTER        := $(if $(CI),,-r compact)
 
 TEST_IMAGE = docker run --rm $(TEST_OPTS) \
 	-v $(CURDIR):/app \
@@ -26,7 +27,7 @@ lint:
 	ucode-lint
 
 test: image
-	$(TEST_IMAGE) utest -l /app/src test/
+	$(TEST_IMAGE) utest -l /app/src $(REPORTER) test/
 
 shell: TEST_OPTS := -it
 shell: image
