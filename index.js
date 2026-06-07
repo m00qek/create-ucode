@@ -92,7 +92,31 @@ async function init() {
 	const root = path.resolve(process.cwd(), projectName);
 	const packageName = path.basename(root);
 
-	if (!fs.existsSync(root)) {
+	if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(packageName)) {
+		console.error(red('✖') + ` Invalid package name: "${packageName}". Use only letters, numbers, hyphens, and underscores.`);
+		return;
+	}
+
+	if (fs.existsSync(root) && fs.readdirSync(root).length > 0) {
+		let overwrite;
+		try {
+			({ overwrite } = await prompts(
+				{
+					type: 'confirm',
+					name: 'overwrite',
+					message: reset(`Directory "${packageName}" is not empty. Overwrite?`),
+					initial: false,
+				},
+				{
+					onCancel: () => { throw new Error(red('✖') + ' Operation cancelled'); },
+				}
+			));
+		} catch (cancelled) {
+			console.log(cancelled.message);
+			return;
+		}
+		if (!overwrite) return;
+	} else if (!fs.existsSync(root)) {
 		fs.mkdirSync(root, { recursive: true });
 	}
 
