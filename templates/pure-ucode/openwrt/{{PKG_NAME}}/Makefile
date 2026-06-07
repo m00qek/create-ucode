@@ -25,7 +25,7 @@ endef
 
 define Package/{{PKG_NAME}}/install
 	$(INSTALL_DIR) $(1)/usr/share/ucode
-	$(INSTALL_DATA) ./src/main.uc $(1)/usr/share/ucode/{{PKG_NAME}}.uc
+	$(INSTALL_DATA) ./src/{{UCODE_MOD_NAME}}.uc $(1)/usr/share/ucode/{{UCODE_MOD_NAME}}.uc
 endef
 
 $(eval $(call BuildPackage,{{PKG_NAME}}))

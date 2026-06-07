@@ -1,5 +1,5 @@
 import { describe, it, assert } from 'utest';
-import { add } from 'main';
+import { add } from '{{UCODE_MOD_NAME}}';
 
 describe("add()", () => {
 	it("returns the sum of two numbers", () => {
