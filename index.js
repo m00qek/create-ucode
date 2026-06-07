@@ -97,8 +97,8 @@ async function init() {
 	const root = path.resolve(process.cwd(), projectName);
 	const packageName = path.basename(root);
 
-	if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(packageName)) {
-		console.error(red('✖') + ` Invalid package name: "${packageName}". Use only letters, numbers, hyphens, and underscores.`);
+	if (!/^[a-z0-9][a-z0-9_-]*$/.test(packageName)) {
+		console.error(red('✖') + ` Invalid package name: "${packageName}". Use only lowercase letters, numbers, hyphens, and underscores.`);
 		return;
 	}
 
