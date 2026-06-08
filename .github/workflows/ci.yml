@@ -126,9 +126,60 @@ jobs:
           [ -z "$RUN_ID" ] && echo "Timed out waiting for CI run on c-module branch" && exit 1
           gh run watch "$RUN_ID" --repo m00qek/ucode-sample-app --exit-status
 
+  push-sample-app-ucode-luci:
+    name: Push ucode-luci scaffold
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Scaffold
+        run: |
+          node index.js /tmp/ucode-sample-app \
+            --template ucode-luci \
+            --maintainer "António Mora <oliveira.fh42@gmail.com>"
+      - name: Patch CI branch trigger
+        run: |
+          sed -i 's/branches: \[main, master\]/branches: [ucode-luci]/' \
+            /tmp/ucode-sample-app/.github/workflows/ci.yml
+      - name: Push orphan branch
+        id: push
+        run: |
+          PUSH_TIME=$(date -u -d '-30 seconds' +%Y-%m-%dT%H:%M:%SZ)
+          cd /tmp/ucode-sample-app
+          git init
+          git config user.email "oliveira.fh42@gmail.com"
+          git config user.name "António Mora"
+          git checkout --orphan ucode-luci
+          git add -A
+          git commit -m "chore: update from create-ucode@${GITHUB_SHA::8}"
+          git remote add origin https://x-access-token:${{ secrets.SAMPLE_APP_TOKEN }}@github.com/m00qek/ucode-sample-app.git
+          git push --force origin ucode-luci
+          echo "push_time=$PUSH_TIME" >> $GITHUB_OUTPUT
+      - name: Wait for orphan branch CI
+        env:
+          GH_TOKEN: ${{ secrets.SAMPLE_APP_TOKEN }}
+          GITHUB_TOKEN: ""
+        run: |
+          for i in $(seq 1 24); do
+            sleep 5
+            RUN_ID=$(gh run list \
+              --repo m00qek/ucode-sample-app \
+              --branch ucode-luci \
+              --limit 1 \
+              --json databaseId,createdAt \
+              --jq ".[0] | select(.createdAt >= \"${{ steps.push.outputs.push_time }}\") | .databaseId // empty")
+            [ -n "$RUN_ID" ] && break
+          done
+          [ -z "$RUN_ID" ] && echo "Timed out waiting for CI run on ucode-luci branch" && exit 1
+          gh run watch "$RUN_ID" --repo m00qek/ucode-sample-app --exit-status
+
   publish:
     name: Publish to npm
-    needs: [test, push-sample-app, push-sample-app-c-mod]
+    needs: [test, push-sample-app, push-sample-app-c-mod, push-sample-app-ucode-luci]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:

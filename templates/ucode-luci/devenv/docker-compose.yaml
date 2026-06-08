@@ -1,0 +1,49 @@
+services:
+  openwrt:
+    build:
+      context: ./services/openwrt
+      args:
+        SDK_ARCH: ${SDK_ARCH:-x86-64}
+        SDK_VERSION: ${SDK_VERSION:-25.12}
+    volumes:
+      - ../src/{{PKG_NAME}}.uc:/usr/share/ucode/{{PKG_NAME}}.uc:ro
+      - ../files/usr/bin/{{PKG_NAME}}:/usr/bin/{{PKG_NAME}}:ro
+      - ../files/usr/share/rpcd/acl.d/{{PKG_NAME}}.json:/usr/share/rpcd/acl.d/{{PKG_NAME}}.json:ro
+      - ../files/usr/share/luci/menu.d/{{PKG_NAME}}.json:/usr/share/luci/menu.d/{{PKG_NAME}}.json:ro
+      - ../files/www/luci-static/resources/view/{{PKG_NAME}}:/www/luci-static/resources/view/{{PKG_NAME}}:ro
+      - ../files/etc/config/{{PKG_NAME}}:/etc/config/{{PKG_NAME}}.default:ro
+    networks:
+      {{PKG_NAME}}-net:
+        # static IP because Docker's embedded DNS (127.0.0.11) requires iptables
+        # DNAT which is broken on some hosts; extra_hosts in browser uses this IP
+        # so Chromium resolves 'openwrt' via /etc/hosts instead of DNS
+        ipv4_address: 172.99.0.10
+    healthcheck:
+      test: ["CMD-SHELL", "curl -so /dev/null -w '%{http_code}' http://localhost/cgi-bin/luci | grep -qE '^[234]'"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 5s
+
+  browser:
+    build:
+      context: ./services/browser
+    volumes:
+      - ../test/e2e:/app/e2e:ro
+      - ../test/playwright.config.js:/app/playwright.config.js:ro
+    environment:
+      BASE_URL: http://openwrt
+    extra_hosts:
+      - "openwrt:172.99.0.10"
+    depends_on:
+      openwrt:
+        condition: service_healthy
+    networks:
+      - {{PKG_NAME}}-net
+
+networks:
+  {{PKG_NAME}}-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.99.0.0/24

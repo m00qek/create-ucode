@@ -1,0 +1,7 @@
+{
+    "admin/services/{{PKG_NAME}}": {
+        "title": "{{PKG_NAME}}",
+        "order": 100,
+        "action": { "type": "view", "path": "{{PKG_NAME}}/index" }
+    }
+}

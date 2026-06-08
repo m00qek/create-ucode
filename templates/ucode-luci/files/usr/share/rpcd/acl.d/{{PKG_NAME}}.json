@@ -1,0 +1,13 @@
+{
+    "{{PKG_NAME}}": {
+        "description": "{{PKG_NAME}} settings",
+        "read": {
+            "ubus": { "uci": ["get"] },
+            "uci": { "{{PKG_NAME}}": ["*"] }
+        },
+        "write": {
+            "ubus": { "uci": ["set", "commit", "apply"] },
+            "uci": { "{{PKG_NAME}}": ["*"] }
+        }
+    }
+}

@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import prompts from 'prompts';
 import minimist from 'minimist';
-import { blue, green, red, reset } from 'kolorist';
+import { blue, cyan, green, red, reset } from 'kolorist';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -13,6 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATES = [
 	{ title: blue('Pure ucode'), value: 'pure-ucode' },
 	{ title: green('ucode + C module'), value: 'c-mod' },
+	{ title: cyan('ucode + LuCI'), value: 'ucode-luci' },
 ];
 
 function printHelp() {
