@@ -48,7 +48,7 @@ The dev environment mounts `src/` and `files/` directly into the container, so e
 
 ### Dependency injection
 
-`src/{{PKG_NAME}}.uc` receives a UCI cursor through a `deps` argument instead of importing `uci` directly:
+`src/{{UCODE_MOD_NAME}}.uc` receives a UCI cursor through a `deps` argument instead of importing `uci` directly:
 
 ```ucode
 export function greet(deps) {
@@ -68,6 +68,8 @@ mock.inject('uci', { data: { {{PKG_NAME}}: { main: { name: 'Alice' } } } }, (uci
     assert.match('Hello Alice!', greet({ uci: uci.cursor() }));
 });
 ```
+
+`{{PKG_NAME}}` is used for all package/UCI identifiers. `{{UCODE_MOD_NAME}}` is the normalized form (hyphens replaced with underscores) used for the ucode module filename and imports — ucode does not support hyphens in module names.
 
 ### End-to-end tests
 

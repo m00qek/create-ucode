@@ -6,7 +6,7 @@ services:
         SDK_ARCH: ${SDK_ARCH:-x86-64}
         SDK_VERSION: ${SDK_VERSION:-25.12}
     volumes:
-      - ../src/{{PKG_NAME}}.uc:/usr/share/ucode/{{PKG_NAME}}.uc:ro
+      - ../src/{{UCODE_MOD_NAME}}.uc:/usr/share/ucode/{{UCODE_MOD_NAME}}.uc:ro
       - ../files/usr/bin/{{PKG_NAME}}:/usr/bin/{{PKG_NAME}}:ro
       - ../files/usr/share/rpcd/acl.d/{{PKG_NAME}}.json:/usr/share/rpcd/acl.d/{{PKG_NAME}}.json:ro
       - ../files/usr/share/luci/menu.d/{{PKG_NAME}}.json:/usr/share/luci/menu.d/{{PKG_NAME}}.json:ro

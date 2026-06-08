@@ -1,5 +1,5 @@
 import { describe, it, assert, mock } from 'utest';
-import { greet } from '{{PKG_NAME}}';
+import { greet } from '{{UCODE_MOD_NAME}}';
 
 describe('greet()', () => {
 	it('greets by name', () => {
