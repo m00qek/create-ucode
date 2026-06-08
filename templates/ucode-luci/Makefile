@@ -37,7 +37,7 @@ test-unit: .docker-image
 	@$(TEST_IMAGE) utest -c test/utest.config.uc $(REPORTER) test/unit/
 
 test-e2e:
-	@$(COMPOSE) up --build --quiet-build --no-attach openwrt --no-log-prefix \
+	@$(COMPOSE) up --build --no-attach openwrt --no-log-prefix \
 	  --abort-on-container-exit --exit-code-from browser; \
 	  EC=$$?; $(COMPOSE) down --remove-orphans 2>/dev/null; exit $$EC
 
