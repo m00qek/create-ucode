@@ -1,6 +1,6 @@
 {
   "name": "create-ucode",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "An initializer for ucode projects on OpenWrt",
   "type": "module",
   "bin": {
@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node index.js dev-app --template pure-ucode --maintainer \"Dev <dev@example.com>\"",
-    "test": "T=$(mktemp -d) && node index.js $T/pure-ucode --template pure-ucode --maintainer \"Test Bot <bot@example.com>\" && node index.js $T/c-mod --template c-mod --maintainer \"Test Bot <bot@example.com>\"; EC=$?; rm -rf $T; exit $EC"
+    "test": "T=$(mktemp -d) && node index.js $T/pure-ucode --template pure-ucode --maintainer \"Test Bot <bot@example.com>\" && node index.js $T/c-mod --template c-mod --maintainer \"Test Bot <bot@example.com>\" && node index.js $T/ucode-luci --template ucode-luci --maintainer \"Test Bot <bot@example.com>\"; EC=$?; rm -rf $T; exit $EC"
   },
   "files": [
     "index.js",
