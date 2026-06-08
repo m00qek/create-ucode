@@ -32,7 +32,7 @@ jobs:
       - name: Install ucode-lint
         run: npm install -g ucode-lint
       - name: Run linter
-        run: ucode-lint
+        run: make lint
 
   test:
     name: Run Tests

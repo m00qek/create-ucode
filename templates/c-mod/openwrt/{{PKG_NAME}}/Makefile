@@ -16,7 +16,7 @@ define Package/$(PKG_NAME)
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=$(PKG_NAME) ucode application
-  DEPENDS:=+ucode +libucode
+  DEPENDS:=+ucode +libucode +uci
 endef
 
 define Package/$(PKG_NAME)/description
@@ -34,6 +34,7 @@ define Package/$(PKG_NAME)/install
 		$(1)/usr/lib/ucode/$(UCODE_MOD_NAME)/native.so
 	$(INSTALL_DIR) $(1)/usr/share/ucode
 	$(INSTALL_DATA) ./src/{{UCODE_MOD_NAME}}.uc $(1)/usr/share/ucode/$(UCODE_MOD_NAME).uc
+	$(CP) ./files/* $(1)/
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

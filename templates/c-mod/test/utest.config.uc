@@ -1,6 +1,4 @@
 return {
-	lib_paths: [
-		"src"
-	],
+	lib_paths: [ "../src" ],
 	mocks: {}
 };

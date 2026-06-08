@@ -15,6 +15,7 @@ REPORTER        := $(if $(CI),,-r compact)
 BUILD_IMAGE = docker run --rm \
 	-v $(CURDIR)/src:/builder/package/$(PKG_NAME)/src:ro \
 	-v $(CURDIR)/mod:/builder/package/$(PKG_NAME)/mod:ro \
+	-v $(CURDIR)/files:/builder/package/$(PKG_NAME)/files:ro \
 	-v $(CURDIR)/$(BUILD_DIR)/$(PKG_NAME)-Makefile:/builder/package/$(PKG_NAME)/Makefile:ro \
 	-v $(CURDIR)/$(BUILD_DIR):/builder/bin \
 	-v $(CURDIR)/$(BUILD_DIR)/include:/builder/out_include \
@@ -26,25 +27,26 @@ TEST_IMAGE = docker run --rm $(TEST_OPTS) \
 	-w /app \
 	$(IMAGE)
 
-.PHONY: image compile test shell package lint
+.PHONY: compile test test-unit shell package lint
 
-image:
-	docker build \
+.docker-image: Dockerfile
+	@docker build \
 		--build-arg SDK_ARCH=$(SDK_ARCH) \
 		--build-arg SDK_VERSION=$(SDK_MAJOR_MINOR) \
 		-t $(IMAGE) .
+	@touch .docker-image
 
 lint:
-	ucode-lint
+	@ucode-lint src/
 
 compile: $(BUILD_DIR)/native.so mod/compile_flags.txt
 
 $(BUILD_DIR)/native.so: $(shell find mod -name '*.c') openwrt/$(PKG_NAME)/Makefile
-	mkdir -p $(BUILD_DIR)/include
-	chmod 777 $(BUILD_DIR) $(BUILD_DIR)/include
-	sed 's/PKG_VERSION:=.*/PKG_VERSION:=$(PKG_VERSION)/' \
+	@mkdir -p $(BUILD_DIR)/include
+	@chmod 755 $(BUILD_DIR) $(BUILD_DIR)/include
+	@sed 's/PKG_VERSION:=.*/PKG_VERSION:=$(PKG_VERSION)/' \
 		openwrt/$(PKG_NAME)/Makefile > $(BUILD_DIR)/$(PKG_NAME)-Makefile
-	$(BUILD_IMAGE) \
+	@$(BUILD_IMAGE) \
 		sh -c " \
 			./scripts/feeds update base && \
 			./scripts/feeds install ucode && \
@@ -57,21 +59,23 @@ $(BUILD_DIR)/native.so: $(shell find mod -name '*.c') openwrt/$(PKG_NAME)/Makefi
 		"; EC=$$?; rm -f $(BUILD_DIR)/$(PKG_NAME)-Makefile; exit $$EC
 
 mod/compile_flags.txt: $(BUILD_DIR)/include
-	printf -- '-I%s\n-Wall\n-Wextra\n-Werror\n-std=gnu99\n' "$(CURDIR)/$(BUILD_DIR)/include" > mod/compile_flags.txt
+	@printf -- '-I%s\n-Wall\n-Wextra\n-Werror\n-std=gnu99\n' "$(CURDIR)/$(BUILD_DIR)/include" > mod/compile_flags.txt
 
-test: image $(BUILD_DIR)/native.so
-	$(TEST_IMAGE) utest -l /app/src $(REPORTER) test/
+test: test-unit
+
+test-unit: .docker-image $(BUILD_DIR)/native.so
+	@$(TEST_IMAGE) utest -c test/utest.config.uc $(REPORTER) test/unit/
 
 shell: TEST_OPTS := -it
-shell: image
-	$(TEST_IMAGE) sh
+shell: .docker-image
+	@$(TEST_IMAGE) sh
 
 package:
-	mkdir -p $(BUILD_DIR)/include
-	chmod 777 $(BUILD_DIR) $(BUILD_DIR)/include
-	sed 's/PKG_VERSION:=.*/PKG_VERSION:=$(PKG_VERSION)/' \
+	@mkdir -p $(BUILD_DIR)/include
+	@chmod 755 $(BUILD_DIR) $(BUILD_DIR)/include
+	@sed 's/PKG_VERSION:=.*/PKG_VERSION:=$(PKG_VERSION)/' \
 		openwrt/$(PKG_NAME)/Makefile > $(BUILD_DIR)/$(PKG_NAME)-Makefile
-	$(BUILD_IMAGE) \
+	@$(BUILD_IMAGE) \
 		sh -c " \
 			./scripts/feeds update base && \
 			./scripts/feeds install ucode && \

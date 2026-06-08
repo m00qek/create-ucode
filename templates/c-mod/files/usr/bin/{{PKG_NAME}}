@@ -1,0 +1,7 @@
+#!/usr/bin/ucode
+'use strict';
+
+import { calculate } from '{{UCODE_MOD_NAME}}';
+import { cursor } from 'uci';
+
+print(calculate({ uci: cursor() }) + '\n');

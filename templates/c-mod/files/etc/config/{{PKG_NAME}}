@@ -1,0 +1,3 @@
+config settings 'main'
+	option a '2'
+	option b '3'

@@ -1,14 +1,8 @@
 'use strict';
-import { add as c_add } from '{{UCODE_MOD_NAME}}.native';
+import { add } from '{{UCODE_MOD_NAME}}.native';
 
-export function add(a, b) {
-	return c_add(a, b);
-};
-
-export function multiply(a, b) {
-	let result = 0;
-	const absB = b < 0 ? -b : b;
-	for (let i = 0; i < absB; i++)
-		result = c_add(result, a);
-	return b < 0 ? -result : result;
+export function calculate(deps) {
+	const a = int(deps.uci.get('{{PKG_NAME}}', 'main', 'a') ?? '2');
+	const b = int(deps.uci.get('{{PKG_NAME}}', 'main', 'b') ?? '3');
+	return `The sum of ${a} + ${b} is ${add(a, b)}`;
 };

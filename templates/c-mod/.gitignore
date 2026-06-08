@@ -1,2 +1,3 @@
 build/
 mod/compile_flags.txt
+.docker-image
