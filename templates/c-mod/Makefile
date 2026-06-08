@@ -43,7 +43,7 @@ compile: $(BUILD_DIR)/native.so mod/compile_flags.txt
 
 $(BUILD_DIR)/native.so: $(shell find mod -name '*.c') openwrt/$(PKG_NAME)/Makefile
 	@mkdir -p $(BUILD_DIR)/include
-	@chmod 755 $(BUILD_DIR) $(BUILD_DIR)/include
+	@chmod 777 $(BUILD_DIR) $(BUILD_DIR)/include
 	@sed 's/PKG_VERSION:=.*/PKG_VERSION:=$(PKG_VERSION)/' \
 		openwrt/$(PKG_NAME)/Makefile > $(BUILD_DIR)/$(PKG_NAME)-Makefile
 	@$(BUILD_IMAGE) \
@@ -72,7 +72,7 @@ shell: .docker-image
 
 package:
 	@mkdir -p $(BUILD_DIR)/include
-	@chmod 755 $(BUILD_DIR) $(BUILD_DIR)/include
+	@chmod 777 $(BUILD_DIR) $(BUILD_DIR)/include
 	@sed 's/PKG_VERSION:=.*/PKG_VERSION:=$(PKG_VERSION)/' \
 		openwrt/$(PKG_NAME)/Makefile > $(BUILD_DIR)/$(PKG_NAME)-Makefile
 	@$(BUILD_IMAGE) \
