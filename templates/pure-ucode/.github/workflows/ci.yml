@@ -25,14 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
-      - name: Install ucode-lint
-        run: npm install -g ucode-lint
-      - name: Run linter
-        run: ucode-lint
+      - run: npm install -g ucode-lint
+      - run: make lint
 
   test:
     name: Run Tests
@@ -40,8 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Run tests
-        run: make test
+      - run: make test
 
   package:
     name: Build Package (${{ matrix.sdk }})

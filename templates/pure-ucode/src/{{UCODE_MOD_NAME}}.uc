@@ -1,5 +1,6 @@
 'use strict';
 
-export function add(a, b) {
-	return a + b;
+export function greet(deps) {
+	const name = deps.uci.get('{{PKG_NAME}}', 'main', 'name') ?? 'World';
+	return `Hello ${name}!`;
 };
